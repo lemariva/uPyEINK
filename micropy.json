@@ -7,7 +7,9 @@
         "vscode": true,
         "pylint": false
     },
-    "packages": {},
+    "packages": {
+        "urequests": "*"
+    },
     "dev-packages": {
         "micropy-cli": "*"
     }
