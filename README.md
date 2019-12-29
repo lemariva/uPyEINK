@@ -18,6 +18,7 @@ Rename the files:
 * `boot.py.sample` to `boot.py` and include your Wi-Fi credentials:
     * ssid_ = ''
     * wpa2_pass = ''
+    
     You need that your ESP32 connect to Wi-Fi to update the widgets.
 * `settings.py.sample` to `settings.py` and set up the following variables:
     * news_api_key ([info here](https://newsapi.org/register))
