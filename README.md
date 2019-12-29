@@ -1,69 +1,67 @@
 # uPyEINK
-This code works on the [e-Paper ESP32 Driver board](https://www.banggood.com/custlink/mKvmb95GQR) and allows you to display information on a [Waveshare 7.5" E-INK V1 display](https://www.banggood.com/custlink/3GGmQZH3nV).
+This project runs on the [e-Paper ESP32 Driver board](https://www.banggood.com/custlink/mKvmb95GQR) and allows you to display information (weather, news, notes) on a [Waveshare 7.5" E-INK V1 display](https://www.banggood.com/custlink/3GGmQZH3nV).
 
 Three widgets displaying following information are available:
 * Weather: weather forecast obtained using the [OpenWeatherMap api](https://openweathermap.org/api).
 * News: news highlights obtained using the [NewsApi api](https://newsapi.org/).
-* Notes: notes that can be added using a web-server that runs on the esp32.
+* Notes: notes that can be added using a web-server that runs on the ESP32.
 
 ## DIY
 The RAM of the ESP32-WROOM (512kb) running MicroPython is very limited. Therefore, it is not possible to load the un-compiled modules and run the code. You will get the annoying error:
 ```
 MemoryError: memory allocation failed, allocating xxxx bytes
 ```
-To avoid that, I included the modules under the folder `frozen_modules` as frozen modules. If you don't know how to do that, check the section Frozen Libraries below.
+To avoid that, you should include the modules under the folder `frozen_modules` as "frozen" modules on your MicroPython firmware. If you don't know how to do that, check the sub-section "Freeze MicroPython Module" below.
 
 ### Configure the project
 Rename the files:
 * `boot.py.sample` to `boot.py` and include your Wi-Fi credentials:
-    ```
-    ssid_ = ''
-    wpa2_pass = ''
-    ```
-    You need to connect your ESP32 to update the Widgets.
-* `settings.py.sample` to `settings.py` and set up the variables:
+    * ssid_ = ''
+    * wpa2_pass = ''
+    You need that your ESP32 connect to Wi-Fi to update the widgets.
+* `settings.py.sample` to `settings.py` and set up the following variables:
     * news_api_key ([info here](https://newsapi.org/register))
     * weather_api_key ([info here](https://openweathermap.org/appid))
 
-Upload the code to the ESP32, using e.g. [VSCode and PyMakr extension](https://lemariva.com/blog/2018/12/micropython-visual-studio-code-as-ide) and have fun. 
+Upload the code to the ESP32, using e.g. [VSCode and PyMakr extension](https://lemariva.com/blog/2018/12/micropython-visual-studio-code-as-ide) and have fun!
 
 The web-server is available under `http://<esp32-ip>` and you can add and remove notes that will be displayed on the E-INK display. 
 
-The E-INK update frequency is set to 2 hours (`settings.update_interval` in milliseconds) and after 5 updates (`settings.calibration_interval`) the ESP32 cleans the display to avoid ghosting and reset the board to update the clock using the ntp server. If you want to, you can activate the deep sleep functionality (`settings.deep_sleep`) but you lose the web-server and you can only update the notes only when the ESP32 is updating the display.
+The E-INK update frequency is set to 2 hours (`settings.update_interval` in milliseconds) and after 5 updates (`settings.calibration_interval`) the ESP32 cleans the display to avoid ghosting and reset the board to update the clock using a ntp server. If you want to, you can activate the deep sleep functionality (`settings.deep_sleep`) but you lose the web-server and you can only update the notes only when the ESP32 is updating the display.
 
-## Frozen Libraries
-There are two ways to reduce memory use of the ESP32.
-* Compile the MicroPython Module using the `mpy-cross` compiler 
-* Include the modules as frozen modules inside the MicroPython firmware.
+## Compiled Libraries
+There are two ways to reduce memory use on MicroPython:
+* Compile the MicroPython module using the `mpy-cross` compiler, or
+* Include the modules as "frozen" modules inside the MicroPython firmware.
 
 ### Compile a MicroPython Module
 To compile a module you need to download the MicroPython repository.
 ```
 git clone https://github.com/micropython/micropython.git
 ```
-Then, go to the `mpy-cross`:
+Then, go to the `mpy-cross` folder and compile the cross-compiler:
 ```
 cd micropython/mpy-cross
 make
 ```
-Then, you can compile a Python file using:
+Then, you can compile a MicroPython file using:
 ```
 ./my-cross foo.py
 ```
-This generates a `.mpy` file that you can load on your ESP32 board. 
+This generates a `.mpy` file that you can load on your ESP32 board. You need to remove the original `.py`, otherwise you import the un-compiled file every time you use `import ...`.
 
 More info: [here](https://github.com/micropython/micropython/tree/master/mpy-cross).
 
-If you use another MicroPython version (e.g. [MicroPython LoBo](https://github.com/loboris/MicroPython_ESP32_psRAM_LoBo)), you need to clone that repository and `make` the cross compiler, otherwise the obtained `.mpy` file won't work.
+If you use another MicroPython version (e.g. [MicroPython LoBo](https://github.com/loboris/MicroPython_ESP32_psRAM_LoBo)), you need to clone that repository and `make` the cross-compiler, otherwise the obtained `.mpy` file won't work on your ESP32
 
 ### Freeze MicroPython Module
-Clone the MicroPython repository using:
+To include your module in the firmware, you need to clone the MicroPython repository using:
 ```
 git clone https://github.com/micropython/micropython.git
 cd micropython
 git submodule update --init
 ```
-and copy the module files that you want to freeze into `micropython/ports/esp32`. 
+and copy the module files that you want to freeze into `micropython/ports/esp32`. This way is a bit more complicated but it makes you code [faster](https://kapusta.cc/2018/03/31/epd/). After cloning the repository, you have to compile it but first you need to set up the toolchain and the ESP-IDF:
 
 #### Setting up the toolchain and ESP-IDF
 The binary toolchain (binutils, gcc, etc.) can be installed using the following
@@ -97,8 +95,8 @@ Otherwise, you can type `make` inside the `micropython/ports/esp32/` and you get
 ```
 export $IDF_PATH=$HOME/esp/esp-idf
 ```
-
-After this, you can type `make deploy` inside the folder `micropython/ports/esp32/`. The command compiles the firmware and if your board is connected to the USB (`/dev/ttyUSB0`, otherwise check the `Makefile`), it uploads the firmware to the board.
+#### Making and deploying the firmware
+After those steps, you can type `make deploy` inside the folder `micropython/ports/esp32/`. The command compiles the firmware and if your board is connected to the USB (`/dev/ttyUSB0`, otherwise check the `Makefile` to change it), it uploads the firmware to the board.
 
 You should see something like this:
 ```
@@ -133,16 +131,15 @@ Hash of data verified.
 
 Leaving...
 Hard resetting via RTS pin...
-
 ```
 
-The modules are compiled (MPY) and added to the MicroPython compilation as frozen modules. 
+The modules are compiled (MPY) and added to the MicroPython firmware as frozen modules. 
 
-If you have some problems to load the firmware/code to the board, try erasing the flash first:
+If you have some problems to load the firmware/code to your ESP32 board, try erasing the flash first using:
 ```
 esptool.py --port /dev/ttyUSB0 erase_flash
 ```
-and then deploying the firmware. This is needed, if you were using the ESP32 with arduino's code.
+and then deploying the firmware again. This is needed, if you were using the ESP32 with arduino's code.
 
 ## Acknowledgement
 * [A MicroPython implementation for a smaller display](https://kapusta.cc/2018/03/31/epd/)
