@@ -8,7 +8,6 @@
         "pylint": false
     },
     "packages": {
-        "urequests": "*"
     },
     "dev-packages": {
         "micropy-cli": "*"
