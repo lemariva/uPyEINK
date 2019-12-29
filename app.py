@@ -16,46 +16,43 @@
  The above copyright notice and this permission notice shall be
  included in all copies or substantial portions of the Software.
 """
-
 import gc
 import e7in5
-from machine import Pin
+import settings
+import functions
 
 import utime
-from microWebSrv import MicroWebSrv
 import font16
 import font8
+import machine
+from microWebSrv import MicroWebSrv
 
 from widgets.forecast import ForecastWidget
 from widgets.news import NewsWidget
 import widgets.notes as NoteServer
 
-import settings
-import functions
+DELAY_TIME = 600000
 
-DELAY_TIME = 10000
-
-busy = Pin(25, mode=Pin.IN)
-cs = Pin(15, mode=Pin.OUT)
-rst = Pin(26, mode=Pin.OUT)
-dc = Pin(27, mode=Pin.OUT)
-sck = Pin(13, mode=Pin.OUT)
-miso = Pin(12, mode=Pin.IN)
-mosi = Pin(14, mode=Pin.OUT)
+busy = machine.Pin(25, mode=machine.Pin.IN)
+cs = machine.Pin(15, mode=machine.Pin.OUT)
+rst = machine.Pin(26, mode=machine.Pin.OUT)
+dc = machine.Pin(27, mode=machine.Pin.OUT)
+sck = machine.Pin(13, mode=machine.Pin.OUT)
+miso = machine.Pin(12, mode=machine.Pin.IN)
+mosi = machine.Pin(14, mode=machine.Pin.OUT)
 
 ## Server
 NoteServer.run()
-gc.collect()
-
 ## Display
 epd = e7in5.EPD(rst, dc, busy, cs, sck, mosi, miso)
+gc.collect()
 
 def run():
-    gc.collect()
+    epd.init_v1()
     while True:
         try:
-            epd.init_v1()
             epd.clear_frame()
+            gc.collect()
             ## Weather Section
             weather_widget = ForecastWidget(api_key=settings.weather_api_key, location=settings.location)
             weather = weather_widget.get_data()
@@ -120,6 +117,7 @@ def run():
             epd.display_frame()
             gc.collect()
             utime.sleep_ms(DELAY_TIME)
-        
+            #machine.deepsleep(DELAY_TIME)
         except:
-            print("An exception occurred")
+            print("An exception occurred!")
+            machine.reset()
