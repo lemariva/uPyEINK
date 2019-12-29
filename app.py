@@ -22,8 +22,8 @@ import settings
 import functions
 
 import utime
-import font16
-import font8
+import fonts.font16 as font16
+import fonts.font8 as font8
 import machine
 from microWebSrv import MicroWebSrv
 
@@ -31,7 +31,7 @@ from widgets.forecast import ForecastWidget
 from widgets.news import NewsWidget
 import widgets.notes as NoteServer
 
-DELAY_TIME = 600000
+DELAY_TIME = settings.update_interval
 
 busy = machine.Pin(25, mode=machine.Pin.IN)
 cs = machine.Pin(15, mode=machine.Pin.OUT)
@@ -49,6 +49,8 @@ gc.collect()
 
 def run():
     epd.init_v1()
+    update_counter = 0
+
     while True:
         try:
             epd.clear_frame()
@@ -113,11 +115,25 @@ def run():
             gc.collect()
 
             ## Display Update
-            epd.display_string_at(1, 375, "updated: %d-%02d-%02d %02d:%02d:%02d" % utime.localtime()[:6], font8, e7in5.COLORED)
+            if settings.show_last_update_time:
+                epd.display_string_at(1, 375, "updated: %d-%02d-%02d %02d:%02d:%02d" % utime.localtime()[:6], font8, e7in5.COLORED)
             epd.display_frame()
             gc.collect()
-            utime.sleep_ms(DELAY_TIME)
-            #machine.deepsleep(DELAY_TIME)
-        except:
-            print("An exception occurred!")
+            
+            if settings.deep_sleep:
+                machine.deepsleep(DELAY_TIME)
+            else:
+                utime.sleep_ms(DELAY_TIME)
+
+            if update_counter > settings.calibration_interval:      # clean the display and avoid ghosting
+                update_counter = 0
+                epd.clear_frame()
+                epd.display_frame()
+                gc.collect()
+                machine.reset()
+
+            update_counter = update_counter + 1
+
+        except Exception as e:
+            print("An exception occurred!" + str(e))
             machine.reset()
