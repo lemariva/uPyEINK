@@ -18,7 +18,7 @@ Rename the files:
 * `boot.py.sample` to `boot.py` and include your Wi-Fi credentials:
     * ssid_ = ''
     * wpa2_pass = ''
-    
+
     You need that your ESP32 connect to Wi-Fi to update the widgets.
 * `settings.py.sample` to `settings.py` and set up the following variables:
     * news_api_key ([info here](https://newsapi.org/register))
@@ -30,12 +30,12 @@ The web-server is available under `http://<esp32-ip>` and you can add and remove
 
 The E-INK update frequency is set to 2 hours (`settings.update_interval` in milliseconds) and after 5 updates (`settings.calibration_interval`) the ESP32 cleans the display to avoid ghosting and reset the board to update the clock using a ntp server. If you want to, you can activate the deep sleep functionality (`settings.deep_sleep`) but you lose the web-server and you can only update the notes only when the ESP32 is updating the display.
 
-## Compiled Libraries
+## Reduce memory use on MicroPython (ESP32)
 There are two ways to reduce memory use on MicroPython:
 * Compile the MicroPython module using the `mpy-cross` compiler, or
 * Include the modules as "frozen" modules inside the MicroPython firmware.
 
-### Compile a MicroPython Module
+### Compile MicroPython modules
 To compile a module you need to download the MicroPython repository.
 ```
 git clone https://github.com/micropython/micropython.git
@@ -55,7 +55,7 @@ More info: [here](https://github.com/micropython/micropython/tree/master/mpy-cro
 
 If you use another MicroPython version (e.g. [MicroPython LoBo](https://github.com/loboris/MicroPython_ESP32_psRAM_LoBo)), you need to clone that repository and `make` the cross-compiler, otherwise the obtained `.mpy` file won't work on your ESP32
 
-### Freeze MicroPython Module
+### Freeze MicroPython modules
 To include your module in the firmware, you need to clone the MicroPython repository using:
 ```
 git clone https://github.com/micropython/micropython.git
@@ -143,6 +143,7 @@ esptool.py --port /dev/ttyUSB0 erase_flash
 and then deploying the firmware again. This is needed, if you were using the ESP32 with arduino's code.
 
 ## Acknowledgement
+I took code and ideas from following repos and wikis:
 * [A MicroPython implementation for a smaller display](https://kapusta.cc/2018/03/31/epd/)
 * [Database implementation and HTML/CSS designs](https://github.com/pfalcon/notes-pico)
 * [LUT and some code](https://github.com/mcauser/micropython-waveshare-epaper)
