@@ -19,19 +19,9 @@
 
 import gc
 import urequests
-gc.collect()
 
 WIDGET_WIDTH = 190
 WIDGET_HEIGHT = 384
-
-icon_map = {
-    "snow": ["snow", "sleet"],
-    "rain": ["rain"],
-    "cloud": ["fog", "cloudy", "partly-cloudy-day", "partly-cloudy-night"],
-    "sun": ["clear-day", "clear-night"],
-    "storm": [],
-    "wind": ["wind"]
-}
 
 class ForecastWidget:
 

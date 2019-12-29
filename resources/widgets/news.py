@@ -19,7 +19,6 @@
 
 import gc
 import urequests
-gc.collect()
 
 WIDGET_WIDTH = 190
 WIDGET_HEIGHT = 384
