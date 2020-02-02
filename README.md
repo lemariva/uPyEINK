@@ -62,7 +62,7 @@ git clone https://github.com/micropython/micropython.git
 cd micropython
 git submodule update --init
 ```
-and copy the module files that you want to freeze into `micropython/ports/esp32`. This way is a bit more complicated but it makes you code [faster](https://kapusta.cc/2018/03/31/epd/). After cloning the repository, you have to compile it but first you need to set up the toolchain and the ESP-IDF:
+and copy the module files that you want to freeze into `micropython/ports/esp32/modules`. This way is a bit more complicated but it makes you code [faster](https://kapusta.cc/2018/03/31/epd/). After cloning the repository, you have to compile it but first you need to set up the toolchain and the ESP-IDF:
 
 #### Setting up the toolchain and ESP-IDF
 The binary toolchain (binutils, gcc, etc.) can be installed using the following
