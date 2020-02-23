@@ -6,7 +6,7 @@ Three widgets displaying following information are available:
 * News: news highlights obtained using the [NewsApi api](https://newsapi.org/).
 * Notes: notes that can be added using a web-server that runs on the ESP32.
 ## More Information
-[MicroPython: an E-INK display controlled with an ESP32](https://lemariva.com/blog/2020/02/micropython-e-ink-display-controlled-esp32)
+[MicroPython: an E-INK display controlled using an ESP32](https://lemariva.com/blog/2020/02/micropython-e-ink-display-controlled-esp32)
 ## DIY
 The RAM of the ESP32-WROOM (512kb) running MicroPython is very limited. Therefore, it is not possible to load the un-compiled modules and run the code. You will get the annoying error:
 ```
